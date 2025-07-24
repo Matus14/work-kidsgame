@@ -17,6 +17,7 @@ public class QuizResultController {
     @Autowired
     private QuizResultService quizResultService;
 
+
     @PostMapping
     public QuizResult saveResult(@RequestBody final QuizResult result) {
         return quizResultService.saveResult(result);
@@ -27,7 +28,7 @@ public class QuizResultController {
         return quizResultService.getAllResults();
     }
 
-    @GetMapping
+    @GetMapping("/top")
     public List<QuizResult> getTopResults() {
         return quizResultService.getTopResults();
     }
