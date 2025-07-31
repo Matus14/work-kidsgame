@@ -6,6 +6,7 @@ import com.mathematics.kidsgame.repository.QuizResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +17,12 @@ public class QuizResultServiceImpl implements QuizResultService {
 
     @Override
     public QuizResult saveResult(QuizResult quizResult) {
+
+        // This line was created to manually handle playedAt timestamp,
+        // because @CreationTimestamp doest working.
+        // Find out that this issue happens sometimes when object comes from a request (POST from frontend)
+        quizResult.setPlayedAt(LocalDateTime.now()); // << this line added
+
         return quizResultRepository.save(quizResult);
     }
 
