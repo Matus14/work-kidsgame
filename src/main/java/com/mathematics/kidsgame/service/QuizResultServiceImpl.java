@@ -4,6 +4,7 @@ package com.mathematics.kidsgame.service;
 import com.mathematics.kidsgame.entity.QuizResult;
 import com.mathematics.kidsgame.repository.QuizResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,12 +29,12 @@ public class QuizResultServiceImpl implements QuizResultService {
 
     @Override
     public List<QuizResult> getAllResults() {
-        return quizResultRepository.findAll();
+        return quizResultRepository.findAll(Sort.by(Sort.Direction.DESC, "score"));
     }
 
     @Override
     public List<QuizResult> getTopResults(){
-        return quizResultRepository.findAll();
+        return quizResultRepository.findTop10ByOrderByScoreDesc();
     }
 
 }
