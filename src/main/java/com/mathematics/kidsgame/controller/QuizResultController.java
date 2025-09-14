@@ -2,10 +2,12 @@ package com.mathematics.kidsgame.controller;
 
 
 import com.mathematics.kidsgame.entity.QuizResult;
-import com.mathematics.kidsgame.repository.QuizResultRepository;
-import com.mathematics.kidsgame.service.QuizResultService;
+import com.mathematics.kidsgame.service.QuizResultInterface;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,22 +18,25 @@ import java.util.List;
 public class QuizResultController {
 
     @Autowired
-    private QuizResultService quizResultService;
+    private QuizResultInterface quizResultInterface;
 
 
     @PostMapping
-    public QuizResult saveResult(@RequestBody final QuizResult result) {
-        return quizResultService.saveResult(result);
+    public ResponseEntity<QuizResult> saveResult(@RequestBody final QuizResult result) {
+        QuizResult saved = quizResultInterface.saveResult(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @GetMapping
-    public List<QuizResult> getAllResults() {
-        return quizResultService.getAllResults();
+    public Page<QuizResult> getResults(
+            @RequestParam(required = false) String name, Pageable pageable
+    ) {
+        return quizResultInterface.getResults(name,pageable);
     }
 
     @GetMapping("/top")
     public List<QuizResult> getTopResults() {
-        return quizResultService.getTopResults();
+        return quizResultInterface.getTopResults();
     }
 
 

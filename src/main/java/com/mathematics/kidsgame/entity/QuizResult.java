@@ -30,7 +30,6 @@ public class QuizResult {
     private int durationSeconds;
     private int score;
 
-    @CreationTimestamp // This automatically sets a date and time when the results been created
-    private LocalDateTime playedAt; // Date and time when player ended quiz
+    private LocalDateTime playedAt;
 
 }

@@ -1,17 +1,51 @@
 package com.mathematics.kidsgame.service;
 
-import com.mathematics.kidsgame.entity.QuizResult;
 
+import com.mathematics.kidsgame.entity.QuizResult;
+import com.mathematics.kidsgame.repository.QuizResultRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+
+import java.time.LocalDateTime;
 import java.util.List;
 
-public interface QuizResultService {
+@Service
+public class QuizResultService implements QuizResultInterface {
 
-    // Save one quiz result to database
-    QuizResult saveResult(QuizResult result);
+    @Autowired
+    private QuizResultRepository quizResultRepository;
 
-    // Get all stored results (e.g. for testing or admin)
-    List<QuizResult> getAllResults();
+    @Override
+    public QuizResult saveResult(QuizResult quizResult) {
 
-    // Get top results by score (e.g. leaderboard)
-    List<QuizResult> getTopResults();
+        // This line was created to manually handle playedAt timestamp,
+        // because @CreationTimestamp doest working.
+        // Find out that this issue happens sometimes when object comes from a request (POST from frontend)
+        quizResult.setPlayedAt(LocalDateTime.now()); // << this line added
+
+        return quizResultRepository.save(quizResult);
+    }
+
+    @Override
+    public List<QuizResult> getAllResults() {
+        return quizResultRepository.findAll(Sort.by(Sort.Direction.DESC, "score"));
+    }
+
+    @Override
+    public List<QuizResult> getTopResults(){
+        return quizResultRepository.findTop10ByOrderByScoreDesc();
+    }
+
+    @Override
+    public Page<QuizResult> getResults(String name, Pageable pageable) {
+        if (name != null && !name.isBlank()) {
+            return quizResultRepository.findByPlayerNameContainingIgnoreCase(name.trim(),pageable);
+        }
+        return quizResultRepository.findAll(pageable);
+    }
+
 }

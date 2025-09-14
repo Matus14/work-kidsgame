@@ -1,7 +1,10 @@
 package com.mathematics.kidsgame.repository;
 
 import com.mathematics.kidsgame.entity.QuizResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 
 import java.util.List;
 
@@ -17,5 +20,7 @@ public interface QuizResultRepository extends JpaRepository<QuizResult, Long> {
     //
     // The method name is like a pattern/template – Spring reads it and builds the correct SQL query behind the scenes
     List<QuizResult> findTop10ByOrderByScoreDesc();
+
+    Page<QuizResult> findByPlayerNameContainingIgnoreCase(String name, Pageable pageable);
 
 }
