@@ -21,6 +21,11 @@ public interface QuizResultRepository extends JpaRepository<QuizResult, Long> {
     // The method name is like a pattern/template – Spring reads it and builds the correct SQL query behind the scenes
     List<QuizResult> findTop10ByOrderByScoreDesc();
 
+
+
+
+    // Finds results where playerName contains given text (case-insensitive).
+    // Pageable lets us slice it into pages instead of showing all at once.
     Page<QuizResult> findByPlayerNameContainingIgnoreCase(String name, Pageable pageable);
 
 }

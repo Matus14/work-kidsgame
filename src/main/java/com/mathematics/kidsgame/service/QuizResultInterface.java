@@ -18,5 +18,6 @@ public interface QuizResultInterface {
     // Get top results by score (e.g. leaderboard)
     List<QuizResult> getTopResults();
 
+    // Get results with optional name filter and paging
     Page<QuizResult> getResults(String name, Pageable pageable);
 }

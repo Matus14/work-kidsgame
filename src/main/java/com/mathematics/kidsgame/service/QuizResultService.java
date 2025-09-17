@@ -40,6 +40,10 @@ public class QuizResultService implements QuizResultInterface {
         return quizResultRepository.findTop10ByOrderByScoreDesc();
     }
 
+
+    // Grab results from DB with optional name filter.
+    // If "name" is given, do a case-insensitive search by playerName.
+    // Otherwise just return all results, but still paged.
     @Override
     public Page<QuizResult> getResults(String name, Pageable pageable) {
         if (name != null && !name.isBlank()) {
