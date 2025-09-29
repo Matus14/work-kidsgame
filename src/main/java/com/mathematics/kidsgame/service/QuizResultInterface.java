@@ -1,5 +1,7 @@
 package com.mathematics.kidsgame.service;
 
+import com.mathematics.kidsgame.DTO.QuizResultRequestDTO;
+import com.mathematics.kidsgame.DTO.QuizResultResponseDTO;
 import com.mathematics.kidsgame.entity.QuizResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,14 +12,20 @@ import java.util.List;
 public interface QuizResultInterface {
 
     // Save one quiz result to database
-    QuizResult saveResult(QuizResult result);
+    QuizResultResponseDTO saveResult(QuizResultRequestDTO request);
 
     // Get all stored results (e.g. for testing or admin)
-    List<QuizResult> getAllResults();
+    List<QuizResultResponseDTO> getAllResults();
 
     // Get top results by score (e.g. leaderboard)
-    List<QuizResult> getTopResults();
+    List<QuizResultResponseDTO> getTopResults();
 
     // Get results with optional name filter and paging
-    Page<QuizResult> getResults(String name, Pageable pageable);
+    Page<QuizResultResponseDTO> getResults(String name, Pageable pageable);
+
+    QuizResultResponseDTO findById(Long id);
+
+    void delete(Long id);
+
+
 }

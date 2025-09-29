@@ -1,8 +1,11 @@
 package com.mathematics.kidsgame.controller;
 
 
+import com.mathematics.kidsgame.DTO.QuizResultRequestDTO;
+import com.mathematics.kidsgame.DTO.QuizResultResponseDTO;
 import com.mathematics.kidsgame.entity.QuizResult;
 import com.mathematics.kidsgame.service.QuizResultInterface;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
@@ -26,11 +29,20 @@ public class QuizResultController {
     // push it through the service to save it in DB,
     // and return 201 Created with the saved object (now it has id + playedAt).
     @PostMapping
-    public ResponseEntity<QuizResult> saveResult(@RequestBody final QuizResult result) {
-        QuizResult saved = quizResultInterface.saveResult(result);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    @ResponseStatus(HttpStatus.CREATED)
+    public QuizResultResponseDTO saveResult(@Valid @RequestBody QuizResultRequestDTO request){
+        return quizResultInterface.saveResult(request);
     }
 
+    @GetMapping("/all")
+    public List<QuizResultResponseDTO> findAll() {
+        return quizResultInterface.getAllResults();
+    }
+
+    @GetMapping("/{id}")
+    public QuizResultResponseDTO findById(@PathVariable Long id) {
+        return quizResultInterface.findById(id);
+    }
 
 
     // GET: pageable list of results
@@ -38,15 +50,21 @@ public class QuizResultController {
     // ?page=0 (first page), ?size=10 (rows per page), ?sort=score,desc (order by score high > low)
     // Response is a Page: has "content" + extra info like totalPages, totalElements
     @GetMapping
-    public Page<QuizResult> getResults(
+    public Page<QuizResultResponseDTO> getResults(
             @RequestParam(required = false) String name, Pageable pageable
     ) {
         return quizResultInterface.getResults(name,pageable);
     }
 
     @GetMapping("/top")
-    public List<QuizResult> getTopResults() {
+    public List<QuizResultResponseDTO> getTopResults() {
         return quizResultInterface.getTopResults();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        quizResultInterface.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 

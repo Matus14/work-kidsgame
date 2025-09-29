@@ -6,13 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-
+@Builder
 @Data // Lombok annotation which automatically handle the getters/setters, toString, equals, hashCode
 @Entity // This marks this class as Entity to enable mapping into database table
 @NoArgsConstructor // Creates nonparametric constructor for Hibernate
