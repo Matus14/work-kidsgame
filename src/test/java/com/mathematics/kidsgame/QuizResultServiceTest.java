@@ -5,6 +5,7 @@ import com.mathematics.kidsgame.DTO.QuizResultResponseDTO;
 import com.mathematics.kidsgame.entity.QuizResult;
 import com.mathematics.kidsgame.repository.QuizResultRepository;
 import com.mathematics.kidsgame.service.QuizResultService;
+import net.bytebuddy.TypeCache;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,10 +13,12 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.*;
@@ -155,6 +158,121 @@ public class QuizResultServiceTest {
 
         verifyNoMoreInteractions(repository);
 
+    }
+
+
+                                          // ===== FIND ALL =====
+
+
+    @Test
+    void findAll_whenStoredEntitiesFound_thenSendOutAllOutAsDto(){
+
+        QuizResult q1 = QuizResult.builder()
+                .id(4L)
+                .playerName("Martin")
+                .correctAnswer(5)
+                .incorrectAnswer(5)
+                .durationSeconds(120)
+                .playedAt(LocalDateTime.now().minusSeconds(100))
+                .build();
+
+        QuizResult q2 = QuizResult.builder()
+                .id(2L)
+                .playerName("Peter")
+                .correctAnswer(3)
+                .incorrectAnswer(7)
+                .durationSeconds(110)
+                .playedAt(LocalDateTime.now().minusSeconds(110))
+                .build();
+
+        when(repository.findAll(any(Sort.class))).thenReturn(List.of(q1,q2));
+
+        List <QuizResultResponseDTO> result = service.getAllResults();
+
+        assertThat(result).hasSize(2);
+
+        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getPlayerName()).isEqualTo("Martin");
+        assertThat(result.get(0).getCorrectAnswer()).isEqualTo(5);
+        assertThat(result.get(0).getIncorrectAnswer()).isEqualTo(5);
+        assertThat(result.get(0).getDurationSeconds()).isEqualTo(120);
+        assertThat(result.get(0).getPlayedAt()).isEqualTo(q1.getPlayedAt());
+
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+        assertThat(result.get(1).getPlayerName()).isEqualTo("Peter");
+        assertThat(result.get(1).getCorrectAnswer()).isEqualTo(3);
+        assertThat(result.get(1).getIncorrectAnswer()).isEqualTo(7);
+        assertThat(result.get(1).getDurationSeconds()).isEqualTo(110);
+        assertThat(result.get(1).getPlayedAt()).isEqualTo(q2.getPlayedAt());
+
+        verify(repository).findAll(any(Sort.class));
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void findAll_whenListEmpty_thenShowEmptyList() {
+
+        when(repository.findAll(any(Sort.class))).thenReturn(List.of());
+
+        List <QuizResultResponseDTO> result = service.getAllResults();
+
+        assertThat(result).isEmpty();
+
+        verify(repository).findAll(any(Sort.class));
+        verifyNoMoreInteractions(repository);
+
+    }
+
+                                      // ======= GET TOP RESULTS =======
+
+    @Test
+    void getTopResults_whenStoredEntityFoundBasedOnPlace_thenShowDto(){
+
+        QuizResult q1 = QuizResult.builder()
+                .id(4L)
+                .playerName("Martin")
+                .correctAnswer(5)
+                .incorrectAnswer(5)
+                .durationSeconds(120)
+                .playedAt(LocalDateTime.now().minusSeconds(100))
+                .score(50)
+                .build();
+
+        QuizResult q2 = QuizResult.builder()
+                .id(2L)
+                .playerName("Peter")
+                .correctAnswer(3)
+                .incorrectAnswer(7)
+                .durationSeconds(110)
+                .playedAt(LocalDateTime.now().minusSeconds(110))
+                .score(20)
+                .build();
+
+        when(repository.findTop10ByOrderByScoreDesc()).thenReturn(List.of(q1,q2));
+
+        List<QuizResultResponseDTO> result = service.getTopResults();
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getPlayerName()).isEqualTo("Martin");
+        assertThat(result.get(0).getCorrectAnswer()).isEqualTo(5);
+        assertThat(result.get(0).getIncorrectAnswer()).isEqualTo(5);
+        assertThat(result.get(0).getDurationSeconds()).isEqualTo(120);
+        assertThat(result.get(0).getPlayedAt()).isEqualTo(q1.getPlayedAt());
+        assertThat(result.get(0).getScore()).isEqualTo(50);
+
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+        assertThat(result.get(1).getPlayerName()).isEqualTo("Peter");
+        assertThat(result.get(1).getCorrectAnswer()).isEqualTo(3);
+        assertThat(result.get(1).getIncorrectAnswer()).isEqualTo(7);
+        assertThat(result.get(1).getDurationSeconds()).isEqualTo(110);
+        assertThat(result.get(1).getPlayedAt()).isEqualTo(q2.getPlayedAt());
+        assertThat(result.get(1).getScore()).isEqualTo(20);
+
+        assertThat(result.get(0).getScore()).isGreaterThanOrEqualTo(result.get(1).getScore());
+
+        verify(repository).findTop10ByOrderByScoreDesc();
+        verifyNoMoreInteractions(repository);
     }
 
 }
